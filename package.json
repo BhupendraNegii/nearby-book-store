@@ -1,26 +1,26 @@
 {
   "name": "nearby-book-store",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Nearby Book Store with AI recommendations",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Bhupendra Negi",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "body-parser": "^2.2.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
     "cosine-similarity": "^1.0.1",
-    "dotenv": "^17.2.3",
-    "ejs": "^3.1.10",
-    "express": "^5.1.0",
-    "express-session": "^1.18.2",
-    "multer": "^2.0.2",
-    "mysql2": "^3.15.3",
-    "natural": "^8.1.0",
-    "tfidf": "^0.2.2"
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.6.0",
+    "natural": "^6.5.0"
   }
 }
