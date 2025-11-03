@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard – Nearby Book Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <!-- DYNAMIC THEME BASED ON GENDER -->
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1f2937;
+      --primary: #4f46e5;
+      --header-bg: #ffffff;
+      --shadow: rgba(0,0,0,.1);
+      --card-hover: rgba(0,0,0,.1);
+      --success: #10b981;
+      --danger: #ef4444;
+      --gray: #6b7280;
+    }
+
+    /* MALE → DARK BLACK THEME */
+    <% if (gender === 'male') { %>
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #e2e8f0;
+        --primary: #38bdf8;
+        --header-bg: #1e293b;
+        --shadow: rgba(0,0,0,.4);
+        --card-hover: rgba(56,189,248,.3);
+        --success: #22c55e;
+        --danger: #f87171;
+        --gray: #94a3b8;
+      }
+    <% } %>
+
+    /* FEMALE → SOFT BLUE THEME */
+    <% if (gender === 'female') { %>
+      :root {
+        --bg: #dbeafe;
+        --card: #eff6ff;
+        --text: #1e40af;
+        --primary: #3b82f6;
+        --header-bg: #dbeafe;
+        --shadow: rgba(59,130,246,.2);
+        --card-hover: rgba(59,130,246,.3);
+        --success: #059669;
+        --danger: #dc2626;
+        --gray: #64748b;
+      }
+    <% } %>
+
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body { 
+      font-family:'Inter',sans-serif; 
+      background:var(--bg); 
+      color:var(--text); 
+      line-height:1.6; 
+    }
+    .container { max-width:1200px; margin:0 auto; padding:1rem; }
+
+    header { background:var(--header-bg); padding:1rem 0; box-shadow:0 2px 4px var(--shadow); margin-bottom:2rem; }
+    .header-inner { display:flex; justify-content:space-between; align-items:center; }
+    .logo { font-weight:700; font-size:1.5rem; color:var(--primary); }
+    .logout { color:var(--danger); font-weight:600; text-decoration:none; }
+
+    .search-bar { margin-bottom:2rem; }
+    .search-bar input {
+      width:100%; padding:0.75rem 1rem; border:1px solid #d1d5db; border-radius:0.5rem;
+      font-size:1rem; outline:none; transition:border .2s; background:var(--card); color:var(--text);
+    }
+    .search-bar input:focus { border-color:var(--primary); }
+
+    .section { margin-bottom:3rem; }
+    .section h2 { font-size:1.5rem; margin-bottom:1rem; color:var(--text); }
+
+    .grid { display:grid; gap:1.5rem; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
+
+    .card {
+      background:var(--card); border-radius:0.75rem; overflow:hidden; 
+      box-shadow:0 4px 6px var(--shadow); transition:transform .2s, box-shadow .2s;
+    }
+    .card:hover { transform:translateY(-4px); box-shadow:0 10px 15px var(--card-hover); }
+    .card img { width:100%; height:260px; object-fit:cover; }
+    .card-body { padding:1rem; }
+    .card-title { font-weight:600; font-size:1.1rem; margin-bottom:.25rem; color:var(--text); }
+    .card-author { color:var(--gray); font-size:.9rem; margin-bottom:.5rem; }
+    .card-price { font-weight:700; color:var(--success); font-size:1.1rem; margin-bottom:.75rem; }
+    .card-owner { font-size:.85rem; color:var(--gray); margin-bottom:.75rem; }
+
+    .btn {
+      display:block; width:100%; padding:.6rem; border:none; border-radius:.4rem;
+      font-weight:600; cursor:pointer; text-align:center; transition:.2s;
+    }
+    .btn-primary { background:var(--primary); color:#fff; }
+    .btn-primary:hover { background:#4338ca; }
+    .btn-success { background:var(--success); color:#fff; }
+    .btn-success:hover { background:#059669; }
+
+    .empty { text-align:center; padding:3rem 1rem; color:var(--gray); }
+    .empty img { width:120px; opacity:.3; margin-bottom:1rem; }
+
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); align-items:center; justify-content:center; z-index:1000; }
+    .modal.show { display:flex; }
+    .modal-content { background:var(--card); border-radius:1rem; width:90%; max-width:500px; padding:2rem; position:relative; }
+    .modal-close { position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text); }
+
+    .toast { position:fixed; bottom:1rem; right:1rem; background:var(--success); color:#fff; padding:.75rem 1.5rem; border-radius:.5rem; box-shadow:0 4px 12px rgba(0,0,0,.15); transform:translateY(100px); opacity:0; transition:.3s; z-index:2000; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.error { background:var(--danger); }
+
+    .spinner { border:4px solid #f3f3f3; border-top:4px solid var(--primary); border-radius:50%; width:30px; height:30px; animation:spin 1s linear infinite; margin:2rem auto; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    @media (max-width:640px) { .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <header>
+      <div class="header-inner container">
+        <div class="logo">Nearby Books</div>
+        <a href="/logout" class="logout">Logout</a>
+      </div>
+    </header>
+
+    <h1>Welcome, <%= bookieName %>!</h1>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search books by title, author, or genre…" />
+    </div>
+
+    <!-- Owned Books -->
+    <div class="section">
+      <h2>Your Owned Books</h2>
+      <% if (owned.length === 0) { %>
+        <div class="empty">
+          <img src="/uploads/empty-box.svg" alt="No books">
+          <p>No books owned yet.</p>
+          <button class="btn btn-primary" onclick="openAddModal()">Add Your First Book</button>
+        </div>
+      <% } else { %>
+        <div class="grid" id="ownedGrid">
+          <% owned.forEach(book => { %>
+            <div class="card" data-title="<%= book.title %>" data-author="<%= book.author %>" data-genre="<%= book.genre %>">
+              <img src="<%= book.cover_url || '/uploads/default-book.jpg' %>" alt="<%= book.title %>">
+              <div class="card-body">
+                <div class="card-title"><%= book.title %></div>
+                <div class="card-author">by <%= book.author %></div>
+                <div class="card-price">$<%= book.price %></div>
+                <div><%= book.is_available ? 'Available' : 'Sold' %></div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        <button class="btn btn-primary" style="margin-top:1rem;" onclick="openAddModal()">Add Another Book</button>
+      <% } %>
+    </div>
+
+    <!-- Bought Books -->
+    <div class="section">
+      <h2>Books You've Bought</h2>
+      <% if (bought.length === 0) { %>
+        <div class="empty">
+          <p>No purchases yet.</p>
+        </div>
+      <% } else { %>
+        <div class="grid">
+          <% bought.forEach(book => { %>
+            <div class="card">
+              <img src="<%= book.cover_url || '/uploads/default-book.jpg' %>" alt="<%= book.title %>">
+              <div class="card-body">
+                <div class="card-title"><%= book.title %></div>
+                <div class="card-author">by <%= book.author %></div>
+                <div class="card-price">$<%= book.price %></div>
+                <div>Bought: <%= new Date(book.purchase_date).toLocaleDateString() %></div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Available Books + AI -->
+    <div class="section">
+      <h2>Available Books (For Sale)</h2>
+
+      <!-- AI Recommendations -->
+      <% if (recommendations && recommendations.length > 0) { %>
+        <div style="margin-bottom:2rem;">
+          <h3 style="color:#7c3aed; margin-bottom:.75rem;">AI Recommendations for You</h3>
+          <div class="grid">
+            <% recommendations.forEach(r => { %>
+              <div class="card">
+                <img src="<%= r.cover_url || '/uploads/default-book.jpg' %>" alt="<%= r.title %>">
+                <div class="card-body">
+                  <div class="card-title"><%= r.title %></div>
+                  <div class="card-author">by <%= r.author %></div>
+                  <div class="card-price">$<%= r.price %></div>
+                  <div class="card-owner">by <%= r.owner_name %></div>
+                  <div style="font-size:.85rem; color:#7c3aed;">Match: <%= (r.score*100).toFixed(0) %>%</div>
+                  <button class="btn btn-success" onclick="buyBook(<%= r.id %>, '<%= r.title %>')">Buy Now</button>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      <% } else { %>
+        <p style="font-style:italic; color:var(--gray); margin-bottom:1.5rem;">
+          Buy a few books to unlock personalized AI recommendations!
+        </p>
+      <% } %>
+
+      <!-- All Available -->
+      <% if (available.length === 0) { %>
+        <div class="empty">
+          <p>No books available right now.</p>
+        </div>
+      <% } else { %>
+        <div class="grid" id="availableGrid">
+          <% available.forEach(book => { %>
+            <div class="card" data-title="<%= book.title %>" data-author="<%= book.author %>" data-genre="<%= book.genre %>">
+              <img src="<%= book.cover_url || '/uploads/default-book.jpg' %>" alt="<%= book.title %>">
+              <div class="card-body">
+                <div class="card-title"><%= book.title %></div>
+                <div class="card-author">by <%= book.author %></div>
+                <div class="card-price">$<%= book.price %></div>
+                <div class="card-owner">by <%= book.owner_name %></div>
+                <button class="btn btn-success" onclick="buyBook(<%= book.id %>, '<%= book.title %>')">Buy Now</button>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Add Book Modal -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeAddModal()">X</button>
+      <h2>Add a New Book</h2>
+      <form id="addBookForm" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Title" required />
+        <input type="text" name="author" placeholder="Author" required />
+        <input type="number" name="price" step="0.01" placeholder="Price" required />
+        <input type="text" name="genre" placeholder="Genre (e.g. Sci-Fi)" />
+        <textarea name="description" placeholder="Short description" rows="3"></textarea>
+        <input type="file" name="cover" accept="image/*" />
+        <button type="submit" class="btn btn-primary" style="margin-top:1rem;">Add Book</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Gender Modal (Only if not set) -->
+  <% if (!gender) { %>
+  <div id="genderModal" style="position:fixed; inset:0; background:rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; z-index:9999;">
+    <div style="background:var(--card); padding:2rem; border-radius:1rem; width:90%; max-width:400px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.2);">
+      <h3 style="margin-bottom:1rem; color:var(--text);">Welcome! Select Your Gender</h3>
+      <p style="margin-bottom:1.5rem; color:var(--gray); font-size:0.95rem;">This personalizes your dashboard theme.</p>
+      <form id="genderForm">
+        <select name="gender" required style="width:100%; padding:.75rem; margin-bottom:1rem; border:1px solid #d1d5db; border-radius:.5rem; font-size:1rem; background:var(--card); color:var(--text);">
+          <option value="">Choose...</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+        <button type="submit" style="background:var(--primary); color:white; padding:.75rem 1.5rem; border:none; border-radius:.5rem; cursor:pointer; font-weight:600; width:100%;">Save & Continue</button>
+      </form>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ——— Modal ———
+    function openAddModal() { document.getElementById('addModal').classList.add('show'); }
+    function closeAddModal() { document.getElementById('addModal').classList.remove('show'); }
+
+    // ——— Add Book (AJAX) ———
+    document.getElementById('addBookForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      const res = await fetch('/add-book', { method:'POST', body:form });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Book added! Reloading…');
+        setTimeout(() => location.reload(), 1200);
+      } else {
+        showToast('Error: ' + (data.error || 'Try again'), true);
+      }
+    });
+
+    // ——— Buy Book (AJAX) ———
+    async function buyBook(id, title) {
+      const res = await fetch('/buy-book', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({bookId:id})
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`You bought "${title}"!`);
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        showToast('Failed: ' + (data.error || 'Try again'), true);
+      }
+    }
+
+    // ——— Toast ———
+    function showToast(msg, error=false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.toggle('error', error);
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ——— Search ———
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', () => {
+      const term = searchInput.value.toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        const text = (card.dataset.title + ' ' + card.dataset.author + ' ' + (card.dataset.genre||'')).toLowerCase();
+        card.style.display = text.includes(term) ? '' : 'none';
+      });
+    });
+
+    // ——— Gender Submit ———
+    const genderForm = document.getElementById('genderForm');
+    if (genderForm) {
+      genderForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const gender = e.target.gender.value;
+        const res = await fetch('/set-gender', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gender })
+        });
+        const data = await res.json();
+        if (data.success) {
+          location.reload();
+        } else {
+          alert(data.error || 'Something went wrong');
+        }
+      };
+    }
+  </script>
+</body>
+</html>

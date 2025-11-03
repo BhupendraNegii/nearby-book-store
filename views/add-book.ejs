@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Add Book</title>
+  <style>
+    body {font-family:Arial;max-width:500px;margin:50px auto;text-align:center;}
+    input, textarea, button {width:100%;padding:12px;margin:8px 0;font-size:16px;}
+    .msg {color:#e74c3c;font-weight:bold;margin:15px 0;}
+    a {color:#3498db;}
+  </style>
+</head>
+<body>
+  <h2>Add Book for Sale</h2>
+
+  <!-- ONLY SHOW IF error_msg EXISTS -->
+  <% if (typeof error_msg !== 'undefined') { %>
+    <p class="msg"><%= error_msg %></p>
+  <% } %>
+
+  <form method="POST" action="/add-book" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Title" required>
+    <input type="text" name="author" placeholder="Author" required>
+    <input type="number" name="price" step="0.01" placeholder="Price ($)" required>
+    <input type="text" name="genre" placeholder="Genre (e.g. Fiction, Sci-Fi)">
+    <textarea name="description" placeholder="Short description (optional)" rows="3"></textarea>
+    <input type="file" name="cover" accept="image/*">
+    <button type="submit">Add Book</button>
+  </form>
+
+  <p><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

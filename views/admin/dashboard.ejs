@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Users</title>
+  <style>
+    body {font-family:Arial;margin:40px;background:#f4f4f4;}
+    table {width:100%;border-collapse:collapse;background:white;}
+    th, td {padding:12px;border:1px solid #ddd;text-align:left;}
+    th {background:#3498db;color:white;}
+    a {color:#e74c3c;} a:hover {text-decoration:underline;}
+  </style>
+</head>
+<body>
+  <h1>Admin Panel - All Users</h1>
+  <p><a href="/admin/books">Manage Books</a> | <a href="/logout">Logout</a></p>
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th></tr>
+    <% users.forEach(u => { %>
+      <tr>
+        <td><%= u.id %></td>
+        <td><%= u.name %></td>
+        <td><%= u.email %></td>
+        <td><%= u.role %></td>
+      </tr>
+    <% }); %>
+  </table>
+</body>
+</html>

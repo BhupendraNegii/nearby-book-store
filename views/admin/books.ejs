@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - All Books</title>
+  <style>
+    body {font-family:Arial;margin:40px;background:#f4f4f4;}
+    table {width:100%;border-collapse:collapse;background:white;}
+    th, td {padding:10px;border:1px solid #ddd;}
+    th {background:#27ae60;color:white;}
+    .btn {padding:6px 10px;margin:2px;border:none;border-radius:4px;color:white;cursor:pointer;}
+    .edit {background:#f39c12;}
+    .delete {background:#e74c3c;}
+    .msg {padding:10px;margin:10px 0;border-radius:5px;}
+    .success {background:#d5f5e3;color:#27ae60;}
+    .error {background:#fadbd8;color:#e74c3c;}
+  </style>
+</head>
+<body>
+  <h1>All Books (Admin)</h1>
+  <p><a href="/admin">Back to Users</a> | <a href="/logout">Logout</a></p>
+
+  <% if (req.query.success) { %>
+    <div class="msg success"><%= req.query.success %></div>
+  <% } %>
+  <% if (req.query.error) { %>
+    <div class="msg error"><%= req.query.stderr %></div>
+  <% } %>
+
+  <table>
+    <tr>
+      <th>ID</th><th>Cover</th><th>Title</th><th>Author</th><th>Price</th><th>Owner</th><th>Available</th><th>Actions</th>
+    </tr>
+    <% books.forEach(b => { %>
+      <tr>
+        <td><%= b.id %></td>
+        <td><img src="<%= b.cover_url || '/uploads/default-book.jpg' %>" width="50"></td>
+        <td><%= b.title %></td>
+        <td><%= b.author %></td>
+        <td>$<%= b.price %></td>
+        <td><%= b.owner_name %></td>
+        <td><%= b.is_available ? 'Yes' : 'No' %></td>
+        <td>
+          <a href="/admin/books/edit/<%= b.id %>" class="btn edit">Edit</a>
+          <form method="POST" action="/admin/books/delete/<%= b.id %>" style="display:inline;">
+            <button type="submit" class="btn delete" onclick="return confirm('Delete this book?')">Delete</button>
+          </form>
+        </td>
+      </tr>
+    <% }); %>
+  </table>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recommendations</title>
+  <style>
+    /* Reuse dashboard styles here, or copy from previous dashboard.ejs */
+    body {font-family:Arial;margin:20px;background:#f9f9f9;}
+    .book-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
+    .book-card {background:white;border:1px solid #ddd;border-radius:10px;padding:15px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
+    .book-card img {width:100%;height:250px;object-fit:cover;border-radius:8px;}
+    .price {font-weight:bold;color:#27ae60;}
+  </style>
+</head>
+<body>
+  <h1>Personalized Recommendations</h1>
+  <a href="/dashboard">Back to Dashboard</a>
+
+  <% if (message) { %>
+    <p><%= message %></p>
+  <% } else if (recommendations.length === 0) { %>
+    <p>No recommendations yet—try buying more books!</p>
+  <% } else { %>
+    <div class="book-grid">
+      <% recommendations.forEach(rec => { %>
+        <div class="book-card">
+          <% if (rec.cover_url) { %>
+            <img src="<%= rec.cover_url %>" alt="<%= rec.title %>">
+          <% } %>
+          <h3><%= rec.title %></h3>
+          <p>by <%= rec.author %></p>
+          <p class="price">$<%= rec.price %></p>
+          <p>From: <%= rec.owner_name %></p>
+          <p>Match Score: <%= (rec.score * 100).toFixed(0) %>%</p>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</body>
+</html>

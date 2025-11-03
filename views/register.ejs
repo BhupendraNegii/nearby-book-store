@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register Bookie</title>
+  <style>
+    body {font-family: Arial, sans-serif; max-width: 420px; margin: 60px auto; text-align: center;}
+    h2   {margin-bottom: 30px;}
+    input {width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; box-sizing: border-box;}
+    button {padding: 12px 30px; font-size: 16px; background:#007bff; color:#fff; border:none; cursor:pointer;}
+    button:hover {background:#0056b3;}
+    .msg {color:#d00; font-weight:bold; margin:15px 0;}
+    a {color:#007bff; text-decoration:none;}
+    a:hover {text-decoration:underline;}
+  </style>
+</head>
+<body>
+
+  <h2>Register Bookie</h2>
+
+  <!-- error message from server -->
+  <% if (typeof error_msg !== 'undefined') { %>
+    <p class="msg"><%= error_msg %></p>
+  <% } %>
+
+  <form method="POST" action="/register">
+    <input type="text"     name="name"     placeholder="Full Name"     required><br>
+    <input type="email"    name="email"    placeholder="Email"         required><br>
+    <input type="password" name="password" placeholder="Password (6+ chars)" minlength="6" required><br>
+    <button type="submit">Register</button>
+  </form>
+
+  <p><a href="/login">Already have an account? Login</a></p>
+
+</body>
+</html>
